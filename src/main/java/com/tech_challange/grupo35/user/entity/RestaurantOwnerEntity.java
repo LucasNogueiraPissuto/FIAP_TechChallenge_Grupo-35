@@ -1,4 +1,4 @@
-package com.tech_challange.grupo35.entity;
+package com.tech_challange.grupo35.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 @Table(name = "restaurant_owners")
 public class RestaurantOwnerEntity extends UserEntity {
 
-    @Column(name = "cnpj", nullable = false, unique = true)
-    private String cnpj;
-
+  @Column(name = "cnpj", nullable = false, unique = true)
+  private String cnpj;
 }
