@@ -10,5 +10,4 @@ public record UserResponse(
         String login,
         String address,
         LocalDateTime lastUpdatedAt
-
 ) {}
