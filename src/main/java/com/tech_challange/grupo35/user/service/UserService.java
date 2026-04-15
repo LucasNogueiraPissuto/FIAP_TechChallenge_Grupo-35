@@ -62,11 +62,13 @@ public class UserService {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        if (!user.getEmail().equals(request.email())
+        if (request.email() != null
+                && !request.email().equals(user.getEmail())
                 && userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException(request.email());
         }
-        if (!user.getLogin().equals(request.login())
+        if (request.login() != null
+                && !request.login().equals(user.getLogin())
                 && userRepository.existsByLogin(request.login())) {
             throw new LoginAlreadyExistsException(request.login());
         }
