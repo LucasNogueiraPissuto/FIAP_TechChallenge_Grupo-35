@@ -1,11 +1,17 @@
 package com.tech_challange.grupo35.user.service;
 
+import com.tech_challange.grupo35.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     // TODO Conrado - ISSUE-03: createCustomer
     // TODO Conrado - ISSUE-03: createRestaurantOwner
