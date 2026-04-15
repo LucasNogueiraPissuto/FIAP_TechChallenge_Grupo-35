@@ -1,19 +1,19 @@
 package com.tech_challange.grupo35.user.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 public record UpdateUserRequest(
-        @NotBlank
+
         String name,
 
-        @Email
-        @NotBlank
+        @Email(message = "Formato de e-mail inválido")
         String email,
 
-        @NotBlank
         String login,
 
-        @NotBlank
-        String address
+        String address,
+
+        String cpf,
+
+        String cnpj
 ) {}

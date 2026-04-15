@@ -10,6 +10,7 @@ import com.tech_challange.grupo35.user.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 public class UserMapper {
@@ -37,22 +38,45 @@ public class UserMapper {
     }
 
     public void updateEntity(UserEntity entity, UpdateUserRequest request) {
-        entity.setName(request.name());
-        entity.setEmail(request.email());
-        entity.setLogin(request.login());
-        entity.setAddress(request.address());
+        Optional.ofNullable(request.name())
+                .ifPresent(entity::setName);
+        Optional.ofNullable(request.email())
+                .ifPresent(entity::setEmail);
+        Optional.ofNullable(request.login())
+                .ifPresent(entity::setLogin);
+        Optional.ofNullable(request.address())
+                .ifPresent(entity::setAddress);
+
         entity.setLastUpdatedAt(LocalDateTime.now());
+
+        if (entity instanceof CustomerEntity customer && request.cpf() != null) {
+            customer.setCpf(request.cpf());
+        } else if (entity instanceof RestaurantOwnerEntity owner && request.cnpj() != null) {
+            owner.setCnpj(request.cnpj());
+        }
     }
 
 
     public UserResponse toResponse(UserEntity entity) {
+
+        String cpf = null;
+        String cnpj = null;
+
+        if (entity instanceof CustomerEntity customer) {
+            cpf = customer.getCpf();
+        } else if (entity instanceof RestaurantOwnerEntity owner) {
+            cnpj = owner.getCnpj();
+        }
+
         return new UserResponse(
                 entity.getId(),
                 entity.getName(),
                 entity.getEmail(),
                 entity.getLogin(),
                 entity.getAddress(),
-                entity.getLastUpdatedAt()
+                entity.getLastUpdatedAt(),
+                cpf,
+                cnpj
         );
     }
 
