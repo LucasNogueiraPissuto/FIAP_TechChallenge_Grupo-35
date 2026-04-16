@@ -9,6 +9,5 @@ import java.util.UUID;
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity, UUID> {
 
-    // Conrado - ISSUE-03
     boolean existsByCpf(String cpf);
 }

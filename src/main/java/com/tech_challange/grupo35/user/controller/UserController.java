@@ -2,8 +2,6 @@ package com.tech_challange.grupo35.user.controller;
 
 
 import com.tech_challange.grupo35.user.dto.ChangePasswordRequest;
-import com.tech_challange.grupo35.user.dto.UpdateUserRequest;
-import com.tech_challange.grupo35.user.dto.UserResponse;
 import com.tech_challange.grupo35.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +16,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(
-            @PathVariable UUID id,
-            @RequestBody @Valid UpdateUserRequest request) {
-
-        UserResponse response = userService.updateUser(id, request);
-
-        return ResponseEntity.ok(response);
-    }
 
     @PatchMapping("/{id}/password")
     public ResponseEntity<Void> changePassword(

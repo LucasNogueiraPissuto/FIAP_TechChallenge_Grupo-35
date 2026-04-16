@@ -1,9 +1,6 @@
 package com.tech_challange.grupo35.user.mapper;
 
-import com.tech_challange.grupo35.user.dto.CreateCustomerRequest;
-import com.tech_challange.grupo35.user.dto.CreateRestaurantOwnerRequest;
-import com.tech_challange.grupo35.user.dto.UpdateUserRequest;
-import com.tech_challange.grupo35.user.dto.UserResponse;
+import com.tech_challange.grupo35.user.dto.*;
 import com.tech_challange.grupo35.user.entity.CustomerEntity;
 import com.tech_challange.grupo35.user.entity.RestaurantOwnerEntity;
 import com.tech_challange.grupo35.user.entity.UserEntity;
@@ -37,23 +34,22 @@ public class UserMapper {
         return owner;
     }
 
-    public void updateEntity(UserEntity entity, UpdateUserRequest request) {
-        Optional.ofNullable(request.name())
-                .ifPresent(entity::setName);
-        Optional.ofNullable(request.email())
-                .ifPresent(entity::setEmail);
-        Optional.ofNullable(request.login())
-                .ifPresent(entity::setLogin);
-        Optional.ofNullable(request.address())
-                .ifPresent(entity::setAddress);
-
+    public void updateEntity(CustomerEntity entity, UpdateCustomerRequest request) {
+        Optional.ofNullable(request.name()).ifPresent(entity::setName);
+        Optional.ofNullable(request.email()).ifPresent(entity::setEmail);
+        Optional.ofNullable(request.login()).ifPresent(entity::setLogin);
+        Optional.ofNullable(request.address()).ifPresent(entity::setAddress);
+        Optional.ofNullable(request.cpf()).ifPresent(entity::setCpf);
         entity.setLastUpdatedAt(LocalDateTime.now());
+    }
 
-        if (entity instanceof CustomerEntity customer && request.cpf() != null) {
-            customer.setCpf(request.cpf());
-        } else if (entity instanceof RestaurantOwnerEntity owner && request.cnpj() != null) {
-            owner.setCnpj(request.cnpj());
-        }
+    public void updateEntity(RestaurantOwnerEntity entity, UpdateRestaurantOwnerRequest request) {
+        Optional.ofNullable(request.name()).ifPresent(entity::setName);
+        Optional.ofNullable(request.email()).ifPresent(entity::setEmail);
+        Optional.ofNullable(request.login()).ifPresent(entity::setLogin);
+        Optional.ofNullable(request.address()).ifPresent(entity::setAddress);
+        Optional.ofNullable(request.cnpj()).ifPresent(entity::setCnpj);
+        entity.setLastUpdatedAt(LocalDateTime.now());
     }
 
 

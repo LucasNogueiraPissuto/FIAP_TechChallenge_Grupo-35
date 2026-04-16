@@ -21,5 +21,4 @@ public record CreateRestaurantOwnerRequest(
 
         @NotBlank
         String cnpj
-
 ) {}

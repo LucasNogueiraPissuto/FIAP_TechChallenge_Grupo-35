@@ -2,18 +2,15 @@ package com.tech_challange.grupo35.user.dto;
 
 import jakarta.validation.constraints.Email;
 
-public record UpdateUserRequest(
-
+public record UpdateRestaurantOwnerRequest(
         String name,
 
-        @Email(message = "Formato de e-mail inválido")
+        @Email
         String email,
 
         String login,
 
         String address,
-
-        String cpf,
 
         String cnpj
 ) {}

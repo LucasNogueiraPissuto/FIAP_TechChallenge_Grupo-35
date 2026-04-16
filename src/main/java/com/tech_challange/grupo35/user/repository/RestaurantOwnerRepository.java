@@ -9,6 +9,5 @@ import java.util.UUID;
 @Repository
 public interface RestaurantOwnerRepository extends JpaRepository<RestaurantOwnerEntity, UUID> {
 
-    // Conrado - ISSUE-03
     boolean existsByCnpj(String cnpj);
 }

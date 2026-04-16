@@ -5,11 +5,18 @@ import java.util.UUID;
 
 public record UserResponse(
         UUID id,
+
         String name,
+
         String email,
+
         String login,
+
         String address,
+
         LocalDateTime lastUpdatedAt,
-        String cpf,    // null se for RestaurantOwner
-        String cnpj    // null se for Customer
+
+        String cpf, // null se for RestaurantOwner
+
+        String cnpj // null se for Customer
 ) {}

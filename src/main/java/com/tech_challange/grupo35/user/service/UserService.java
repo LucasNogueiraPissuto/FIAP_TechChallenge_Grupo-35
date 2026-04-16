@@ -58,24 +58,42 @@ public class UserService {
         return userMapper.toResponse(restaurantOwnerRepository.save(owner));
     }
 
-    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
-        UserEntity user = userRepository.findById(id)
+    public UserResponse updateCustomer(UUID id, UpdateCustomerRequest request) {
+        CustomerEntity customer = customerRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         if (request.email() != null
-                && !request.email().equals(user.getEmail())
+                && !request.email().equals(customer.getEmail())
                 && userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException(request.email());
         }
         if (request.login() != null
-                && !request.login().equals(user.getLogin())
+                && !request.login().equals(customer.getLogin())
                 && userRepository.existsByLogin(request.login())) {
             throw new LoginAlreadyExistsException(request.login());
         }
 
-        userMapper.updateEntity(user, request);
+        userMapper.updateEntity(customer, request);
+        return userMapper.toResponse(customerRepository.save(customer));
+    }
 
-        return userMapper.toResponse(userRepository.save(user));
+    public UserResponse updateRestaurantOwner(UUID id, UpdateRestaurantOwnerRequest request) {
+        RestaurantOwnerEntity owner = restaurantOwnerRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        if (request.email() != null
+                && !request.email().equals(owner.getEmail())
+                && userRepository.existsByEmail(request.email())) {
+            throw new EmailAlreadyExistsException(request.email());
+        }
+        if (request.login() != null
+                && !request.login().equals(owner.getLogin())
+                && userRepository.existsByLogin(request.login())) {
+            throw new LoginAlreadyExistsException(request.login());
+        }
+
+        userMapper.updateEntity(owner, request);
+        return userMapper.toResponse(restaurantOwnerRepository.save(owner));
     }
 
     public void changePassword(UUID id, ChangePasswordRequest request) {
