@@ -5,6 +5,8 @@ import com.tech_challange.grupo35.user.dto.*;
 import com.tech_challange.grupo35.user.entity.CustomerEntity;
 import com.tech_challange.grupo35.user.entity.RestaurantOwnerEntity;
 import com.tech_challange.grupo35.user.entity.UserEntity;
+import com.tech_challange.grupo35.user.mapper.CustomerMapper;
+import com.tech_challange.grupo35.user.mapper.RestaurantOwnerMapper;
 import com.tech_challange.grupo35.user.mapper.UserMapper;
 import com.tech_challange.grupo35.user.repository.CustomerRepository;
 import com.tech_challange.grupo35.user.repository.RestaurantOwnerRepository;
@@ -23,6 +25,8 @@ public class UserService {
     private final CustomerRepository customerRepository;
     private final RestaurantOwnerRepository restaurantOwnerRepository;
     private final UserMapper userMapper;
+    private final CustomerMapper customerMapper;
+    private final RestaurantOwnerMapper restaurantOwnerMapper;
 
     public UserResponse createCustomer(CreateCustomerRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -35,7 +39,7 @@ public class UserService {
             throw new CpfAlreadyExistsException(request.cpf());
         }
 
-        CustomerEntity customer = userMapper.toEntity(request);
+        CustomerEntity customer = customerMapper.toEntity(request);
         customer.setPassword(request.password());
 
         return userMapper.toResponse(customerRepository.save(customer));
@@ -52,7 +56,7 @@ public class UserService {
             throw new CnpjAlreadyExistsException(request.cnpj());
         }
 
-        RestaurantOwnerEntity owner = userMapper.toEntity(request);
+        RestaurantOwnerEntity owner = restaurantOwnerMapper.toEntity(request);
         owner.setPassword(request.password());
 
         return userMapper.toResponse(restaurantOwnerRepository.save(owner));
@@ -73,7 +77,7 @@ public class UserService {
             throw new LoginAlreadyExistsException(request.login());
         }
 
-        userMapper.updateEntity(customer, request);
+        customerMapper.updateEntity(customer, request);
         return userMapper.toResponse(customerRepository.save(customer));
     }
 
@@ -92,7 +96,7 @@ public class UserService {
             throw new LoginAlreadyExistsException(request.login());
         }
 
-        userMapper.updateEntity(owner, request);
+        restaurantOwnerMapper.updateEntity(owner, request);
         return userMapper.toResponse(restaurantOwnerRepository.save(owner));
     }
 
