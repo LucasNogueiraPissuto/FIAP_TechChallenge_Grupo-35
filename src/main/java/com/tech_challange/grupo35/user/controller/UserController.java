@@ -1,18 +1,33 @@
 package com.tech_challange.grupo35.user.controller;
 
 
+import com.tech_challange.grupo35.user.dto.ChangePasswordRequest;
+import com.tech_challange.grupo35.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    // TODO Conrado - ISSUE-04: PUT /{id}
-    // TODO Conrado - ISSUE-05: PATCH /{id}/password
+    private final UserService userService;
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable UUID id,
+            @RequestBody @Valid ChangePasswordRequest request) {
+
+        userService.changePassword(id, request);
+
+        return ResponseEntity.noContent().build();
+    }
+
     // TODO Pedro   - ISSUE-06: DELETE /{id}
-    // TODO Pedro   - ISSUE-06: GET ?nome=
+    // TODO Pedro   - ISSUE-06: GET ?name=
 
 }
