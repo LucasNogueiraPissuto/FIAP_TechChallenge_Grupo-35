@@ -1,10 +1,12 @@
 package com.tech_challange.grupo35.user.service;
 
 import com.tech_challange.grupo35.exception.*;
+import com.tech_challange.grupo35.security.JwtService;
 import com.tech_challange.grupo35.user.dto.*;
 import com.tech_challange.grupo35.user.entity.CustomerEntity;
 import com.tech_challange.grupo35.user.entity.RestaurantOwnerEntity;
 import com.tech_challange.grupo35.user.entity.UserEntity;
+import com.tech_challange.grupo35.security.dto.LoginResponse;
 import com.tech_challange.grupo35.user.mapper.CustomerMapper;
 import com.tech_challange.grupo35.user.mapper.RestaurantOwnerMapper;
 import com.tech_challange.grupo35.user.mapper.UserMapper;
@@ -28,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final CustomerMapper customerMapper;
     private final RestaurantOwnerMapper restaurantOwnerMapper;
+    private final JwtService jwtService;
 
     public UserResponse createCustomer(CreateCustomerRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -130,7 +133,7 @@ public class UserService {
                 .toList();
     }
 
-    public UserResponse login(String login, String password) {
+    public LoginResponse login(String login, String password) {
         UserEntity user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new UserNotFoundException());
 
@@ -138,7 +141,8 @@ public class UserService {
             throw new InvalidPasswordException();
         }
 
-        return userMapper.toResponse(user);
+        String token = jwtService.generateToken(login);
+        return new LoginResponse(token);
     }
 
 }

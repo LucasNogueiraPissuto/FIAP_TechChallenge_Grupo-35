@@ -6,7 +6,6 @@ import com.tech_challange.grupo35.user.service.UserService;
 import com.tech_challange.grupo35.user.dto.UserResponse;
 import com.tech_challange.grupo35.security.dto.LoginRequest;
 import com.tech_challange.grupo35.security.dto.LoginResponse;
-import com.tech_challange.grupo35.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +25,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final JwtService jwtService;
 
     @PatchMapping("/{id}/password")
     @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário específico")
@@ -72,9 +70,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Login ou senha inválidos")
     })
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        userService.login(request.login(), request.password());
-        String token = jwtService.generateToken(request.login());
-        return ResponseEntity.ok(new LoginResponse(token));
+        return ResponseEntity.ok(userService.login(request.login(), request.password()));
     }
 
 }
