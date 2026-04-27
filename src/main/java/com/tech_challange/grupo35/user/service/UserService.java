@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -114,8 +115,30 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // TODO Pedro   - ISSUE-06: deleteUser
-    // TODO Pedro   - ISSUE-06: findByNome
-    // TODO Pedro   - ISSUE-07: login
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException(id);
+        }
+        userRepository.deleteById(id);
+    }
+
+    public List<UserResponse> findByName(String name) {
+        return userRepository
+                .findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    public UserResponse login(String login, String password) {
+        UserEntity user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if (!user.getPassword().equals(password)) {
+            throw new InvalidPasswordException();
+        }
+
+        return userMapper.toResponse(user);
+    }
 
 }
