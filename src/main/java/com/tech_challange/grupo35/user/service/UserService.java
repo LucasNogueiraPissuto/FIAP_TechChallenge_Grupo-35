@@ -1,10 +1,12 @@
 package com.tech_challange.grupo35.user.service;
 
 import com.tech_challange.grupo35.exception.*;
+import com.tech_challange.grupo35.security.JwtService;
 import com.tech_challange.grupo35.user.dto.*;
 import com.tech_challange.grupo35.user.entity.CustomerEntity;
 import com.tech_challange.grupo35.user.entity.RestaurantOwnerEntity;
 import com.tech_challange.grupo35.user.entity.UserEntity;
+import com.tech_challange.grupo35.security.dto.LoginResponse;
 import com.tech_challange.grupo35.user.mapper.CustomerMapper;
 import com.tech_challange.grupo35.user.mapper.RestaurantOwnerMapper;
 import com.tech_challange.grupo35.user.mapper.UserMapper;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final CustomerMapper customerMapper;
     private final RestaurantOwnerMapper restaurantOwnerMapper;
+    private final JwtService jwtService;
 
     public UserResponse createCustomer(CreateCustomerRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -114,8 +118,31 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // TODO Pedro   - ISSUE-06: deleteUser
-    // TODO Pedro   - ISSUE-06: findByNome
-    // TODO Pedro   - ISSUE-07: login
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException(id);
+        }
+        userRepository.deleteById(id);
+    }
+
+    public List<UserResponse> findByName(String name) {
+        return userRepository
+                .findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    public LoginResponse login(String login, String password) {
+        UserEntity user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if (!user.getPassword().equals(password)) {
+            throw new InvalidPasswordException();
+        }
+
+        String token = jwtService.generateToken(login);
+        return new LoginResponse(token);
+    }
 
 }
