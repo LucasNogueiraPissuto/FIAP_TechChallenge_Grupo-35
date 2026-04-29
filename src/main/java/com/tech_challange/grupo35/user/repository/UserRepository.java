@@ -10,7 +10,9 @@ public interface UserRepository {
     Optional<UserEntity> findById(UUID id);
     boolean existsByEmail(String email);
     boolean existsByLogin(String login);
+    boolean existsById(UUID id);
     UserEntity save(UserEntity user);
     List<UserEntity> findByNameContainingIgnoreCase(String name);
     Optional<UserEntity> findByLogin(String login);
+    void deleteById(UUID id);
 }

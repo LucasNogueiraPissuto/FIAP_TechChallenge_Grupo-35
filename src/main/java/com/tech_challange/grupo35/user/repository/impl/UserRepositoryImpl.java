@@ -45,4 +45,14 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<UserEntity> findByLogin(String login) {
         return jpaRepository.findByLogin(login);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return jpaRepository.existsById(id);
+    }
 }
