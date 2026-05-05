@@ -216,4 +216,4 @@ O arquivo `collection.json` na raiz do projeto contém todos os cenários de tes
 
 ## Autores
 
-Conrado Rennó • Matheus Martins • Lucas Nogueira Pissuto • Pedro Braz • Alexandre Sato
+Conrado Rennó(RM370819) • Matheus Martins(RM373838) • Lucas Nogueira Pissuto(RM371783) • Pedro Braz(RM371592) • Alexandre Sato(RM372572)
