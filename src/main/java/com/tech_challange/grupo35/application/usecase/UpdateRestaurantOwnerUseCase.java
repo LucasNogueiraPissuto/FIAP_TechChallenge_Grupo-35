@@ -41,7 +41,7 @@ public class UpdateRestaurantOwnerUseCase implements UpdateRestaurantOwner {
             throw new LoginAlreadyExistsException(request.login());
         }
 
-        restaurantOwnerMapper.updateModel(owner, request);
-        return userMapper.toResponse(restaurantOwnerRepository.save(owner));
+        RestaurantOwner updated = restaurantOwnerMapper.updateModel(owner, request);
+        return userMapper.toResponse(restaurantOwnerRepository.save(updated));
     }
 }

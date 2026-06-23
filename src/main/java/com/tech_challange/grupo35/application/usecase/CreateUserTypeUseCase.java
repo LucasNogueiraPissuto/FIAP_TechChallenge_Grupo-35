@@ -21,10 +21,7 @@ public class CreateUserTypeUseCase implements CreateUserType {
             throw new UserTypeNameAlreadyExistsException(request.name());
         }
 
-        UserType userType = new UserType();
-        userType.setName(request.name());
-
-        UserType saved = userTypeRepository.save(userType);
+        UserType saved = userTypeRepository.save(UserType.create(request.name()));
         return new UserTypeResponse(saved.getId(), saved.getName());
     }
 }

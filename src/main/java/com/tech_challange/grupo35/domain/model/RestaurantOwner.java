@@ -1,17 +1,39 @@
 package com.tech_challange.grupo35.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Table(name = "restaurant_owners")
 public class RestaurantOwner extends User {
 
-  @Column(name = "cnpj", nullable = false, unique = true)
-  private String cnpj;
+    private final String cnpj;
+
+    public RestaurantOwner(UUID id, String name, String email, String login, String password,
+                           String address, LocalDateTime lastUpdatedAt, UserType userType, String cnpj) {
+        super(id, name, email, login, password, address, lastUpdatedAt, userType);
+        this.cnpj = cnpj;
+    }
+
+    public static RestaurantOwner create(String name, String email, String login, String password,
+                                         String address, String cnpj) {
+        return new RestaurantOwner(
+                null,
+                requireText(name, "name"),
+                requireText(email, "email"),
+                requireText(login, "login"),
+                requireText(password, "password"),
+                requireText(address, "address"),
+                LocalDateTime.now(),
+                null,
+                requireText(cnpj, "cnpj"));
+    }
+
+    @Override
+    protected User copy(String name, String email, String login, String password,
+                        String address, LocalDateTime lastUpdatedAt, UserType userType) {
+        return new RestaurantOwner(getId(), name, email, login, password, address, lastUpdatedAt, userType, cnpj);
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
 }

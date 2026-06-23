@@ -3,8 +3,10 @@ package com.tech_challange.grupo35.infrastructure.persistence.repository;
 import com.tech_challange.grupo35.domain.model.User;
 import com.tech_challange.grupo35.domain.repository.UserRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.jpa.UserJpaRepository;
+import com.tech_challange.grupo35.infrastructure.persistence.mapper.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +17,12 @@ import java.util.UUID;
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository jpaRepository;
+    private final UserEntityMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findById(UUID id) {
-        return jpaRepository.findById(id);
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
@@ -32,18 +36,23 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @Transactional
     public User save(User user) {
-        return jpaRepository.save(user);
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(user)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findByNameContainingIgnoreCase(String name) {
-        return jpaRepository.findByNameContainingIgnoreCase(name);
+        return jpaRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByLogin(String login) {
-        return jpaRepository.findByLogin(login);
+        return jpaRepository.findByLogin(login).map(mapper::toDomain);
     }
 
     @Override

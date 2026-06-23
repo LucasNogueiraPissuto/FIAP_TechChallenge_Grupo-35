@@ -36,7 +36,6 @@ public class CreateCustomerUseCase implements CreateCustomer {
         }
 
         Customer customer = customerMapper.toModel(request);
-        customer.setPassword(request.password());
 
         return userMapper.toResponse(customerRepository.save(customer));
     }

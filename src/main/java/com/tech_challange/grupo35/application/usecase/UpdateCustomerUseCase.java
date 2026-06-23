@@ -41,7 +41,7 @@ public class UpdateCustomerUseCase implements UpdateCustomer {
             throw new LoginAlreadyExistsException(request.login());
         }
 
-        customerMapper.updateModel(customer, request);
-        return userMapper.toResponse(customerRepository.save(customer));
+        Customer updated = customerMapper.updateModel(customer, request);
+        return userMapper.toResponse(customerRepository.save(updated));
     }
 }

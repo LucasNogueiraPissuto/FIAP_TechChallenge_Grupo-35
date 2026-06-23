@@ -6,28 +6,30 @@ import com.tech_challange.grupo35.domain.model.Customer;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Component
 public class CustomerMapper {
 
     public Customer toModel(CreateCustomerRequest request) {
-        Customer customer = new Customer();
-        customer.setName(request.name());
-        customer.setEmail(request.email());
-        customer.setLogin(request.login());
-        customer.setAddress(request.address());
-        customer.setCpf(request.cpf());
-        customer.setLastUpdatedAt(LocalDateTime.now());
-        return customer;
+        return Customer.create(
+                request.name(),
+                request.email(),
+                request.login(),
+                request.password(),
+                request.address(),
+                request.cpf());
     }
 
-    public void updateModel(Customer customer, UpdateCustomerRequest request) {
-        Optional.ofNullable(request.name()).ifPresent(customer::setName);
-        Optional.ofNullable(request.email()).ifPresent(customer::setEmail);
-        Optional.ofNullable(request.login()).ifPresent(customer::setLogin);
-        Optional.ofNullable(request.address()).ifPresent(customer::setAddress);
-        Optional.ofNullable(request.cpf()).ifPresent(customer::setCpf);
-        customer.setLastUpdatedAt(LocalDateTime.now());
+    public Customer updateModel(Customer current, UpdateCustomerRequest request) {
+        return new Customer(
+                current.getId(),
+                request.name() != null ? request.name() : current.getName(),
+                request.email() != null ? request.email() : current.getEmail(),
+                request.login() != null ? request.login() : current.getLogin(),
+                current.getPassword(),
+                request.address() != null ? request.address() : current.getAddress(),
+                LocalDateTime.now(),
+                current.getUserType(),
+                request.cpf() != null ? request.cpf() : current.getCpf());
     }
 }

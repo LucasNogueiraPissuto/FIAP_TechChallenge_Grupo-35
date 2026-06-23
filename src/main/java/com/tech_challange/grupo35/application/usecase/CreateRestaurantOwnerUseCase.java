@@ -36,7 +36,6 @@ public class CreateRestaurantOwnerUseCase implements CreateRestaurantOwner {
         }
 
         RestaurantOwner owner = restaurantOwnerMapper.toModel(request);
-        owner.setPassword(request.password());
 
         return userMapper.toResponse(restaurantOwnerRepository.save(owner));
     }
