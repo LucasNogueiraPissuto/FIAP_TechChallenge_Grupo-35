@@ -4,6 +4,7 @@ import com.tech_challange.grupo35.application.dto.CreateCustomerRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
 import com.tech_challange.grupo35.application.mapper.CustomerMapper;
 import com.tech_challange.grupo35.application.mapper.UserMapper;
+import com.tech_challange.grupo35.application.port.in.CreateCustomer;
 import com.tech_challange.grupo35.domain.exception.CpfAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.EmailAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.LoginAlreadyExistsException;
@@ -15,13 +16,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCustomerUseCase {
+public class CreateCustomerUseCase implements CreateCustomer {
 
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserMapper userMapper;
 
+    @Override
     public UserResponse execute(CreateCustomerRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException(request.email());

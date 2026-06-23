@@ -3,8 +3,8 @@ package com.tech_challange.grupo35.infrastructure.web.controller;
 import com.tech_challange.grupo35.application.dto.CreateCustomerRequest;
 import com.tech_challange.grupo35.application.dto.UpdateCustomerRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
-import com.tech_challange.grupo35.application.usecase.CreateCustomerUseCase;
-import com.tech_challange.grupo35.application.usecase.UpdateCustomerUseCase;
+import com.tech_challange.grupo35.application.port.in.CreateCustomer;
+import com.tech_challange.grupo35.application.port.in.UpdateCustomer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -26,8 +26,8 @@ import java.util.UUID;
 @Tag(name = "Clientes", description = "Endpoints para gerenciar clientes")
 public class CustomerController {
 
-    private final CreateCustomerUseCase createCustomerUseCase;
-    private final UpdateCustomerUseCase updateCustomerUseCase;
+    private final CreateCustomer createCustomerUseCase;
+    private final UpdateCustomer updateCustomerUseCase;
 
     @PostMapping
     @Operation(summary = "Criar um novo cliente", description = "Cria um novo cliente com os detalhes fornecidos")

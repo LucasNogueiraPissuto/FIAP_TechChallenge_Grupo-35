@@ -4,6 +4,7 @@ import com.tech_challange.grupo35.application.dto.UpdateRestaurantOwnerRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
 import com.tech_challange.grupo35.application.mapper.RestaurantOwnerMapper;
 import com.tech_challange.grupo35.application.mapper.UserMapper;
+import com.tech_challange.grupo35.application.port.in.UpdateRestaurantOwner;
 import com.tech_challange.grupo35.domain.exception.EmailAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.LoginAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.UserNotFoundException;
@@ -17,13 +18,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateRestaurantOwnerUseCase {
+public class UpdateRestaurantOwnerUseCase implements UpdateRestaurantOwner {
 
     private final UserRepository userRepository;
     private final RestaurantOwnerRepository restaurantOwnerRepository;
     private final RestaurantOwnerMapper restaurantOwnerMapper;
     private final UserMapper userMapper;
 
+    @Override
     public UserResponse execute(UUID id, UpdateRestaurantOwnerRequest request) {
         RestaurantOwner owner = restaurantOwnerRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));

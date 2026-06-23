@@ -5,11 +5,11 @@ import com.tech_challange.grupo35.application.dto.ChangePasswordRequest;
 import com.tech_challange.grupo35.application.dto.LoginRequest;
 import com.tech_challange.grupo35.application.dto.LoginResponse;
 import com.tech_challange.grupo35.application.dto.UserResponse;
-import com.tech_challange.grupo35.application.usecase.AssignUserTypeUseCase;
-import com.tech_challange.grupo35.application.usecase.ChangePasswordUseCase;
-import com.tech_challange.grupo35.application.usecase.DeleteUserUseCase;
-import com.tech_challange.grupo35.application.usecase.FindUsersByNameUseCase;
-import com.tech_challange.grupo35.application.usecase.LoginUseCase;
+import com.tech_challange.grupo35.application.port.in.AssignUserType;
+import com.tech_challange.grupo35.application.port.in.ChangePassword;
+import com.tech_challange.grupo35.application.port.in.DeleteUser;
+import com.tech_challange.grupo35.application.port.in.FindUsersByName;
+import com.tech_challange.grupo35.application.port.in.LoginUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -31,11 +31,11 @@ import java.util.UUID;
 @Tag(name = "Usuários", description = "Endpoints para operações gerais de usuários")
 public class UserController {
 
-    private final ChangePasswordUseCase changePasswordUseCase;
-    private final DeleteUserUseCase deleteUserUseCase;
-    private final FindUsersByNameUseCase findUsersByNameUseCase;
-    private final LoginUseCase loginUseCase;
-    private final AssignUserTypeUseCase assignUserTypeUseCase;
+    private final ChangePassword changePasswordUseCase;
+    private final DeleteUser deleteUserUseCase;
+    private final FindUsersByName findUsersByNameUseCase;
+    private final LoginUser loginUseCase;
+    private final AssignUserType assignUserTypeUseCase;
 
     @PatchMapping("/{id}/password")
     @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário específico")

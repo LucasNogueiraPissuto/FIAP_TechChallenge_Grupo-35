@@ -3,8 +3,8 @@ package com.tech_challange.grupo35.infrastructure.web.controller;
 import com.tech_challange.grupo35.application.dto.CreateRestaurantOwnerRequest;
 import com.tech_challange.grupo35.application.dto.UpdateRestaurantOwnerRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
-import com.tech_challange.grupo35.application.usecase.CreateRestaurantOwnerUseCase;
-import com.tech_challange.grupo35.application.usecase.UpdateRestaurantOwnerUseCase;
+import com.tech_challange.grupo35.application.port.in.CreateRestaurantOwner;
+import com.tech_challange.grupo35.application.port.in.UpdateRestaurantOwner;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -26,8 +26,8 @@ import java.util.UUID;
 @Tag(name = "Donos de Restaurante", description = "Endpoints para gerenciar donos de restaurante")
 public class RestaurantOwnerController {
 
-    private final CreateRestaurantOwnerUseCase createRestaurantOwnerUseCase;
-    private final UpdateRestaurantOwnerUseCase updateRestaurantOwnerUseCase;
+    private final CreateRestaurantOwner createRestaurantOwnerUseCase;
+    private final UpdateRestaurantOwner updateRestaurantOwnerUseCase;
 
     @PostMapping
     @Operation(summary = "Criar um novo dono de restaurante", description = "Cria um novo dono de restaurante com os detalhes fornecidos")

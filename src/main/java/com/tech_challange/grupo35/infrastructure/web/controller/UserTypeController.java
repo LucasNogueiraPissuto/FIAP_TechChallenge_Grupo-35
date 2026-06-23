@@ -3,11 +3,11 @@ package com.tech_challange.grupo35.infrastructure.web.controller;
 import com.tech_challange.grupo35.application.dto.CreateUserTypeRequest;
 import com.tech_challange.grupo35.application.dto.UpdateUserTypeRequest;
 import com.tech_challange.grupo35.application.dto.UserTypeResponse;
-import com.tech_challange.grupo35.application.usecase.CreateUserTypeUseCase;
-import com.tech_challange.grupo35.application.usecase.DeleteUserTypeUseCase;
-import com.tech_challange.grupo35.application.usecase.GetAllUserTypesUseCase;
-import com.tech_challange.grupo35.application.usecase.GetUserTypeByIdUseCase;
-import com.tech_challange.grupo35.application.usecase.UpdateUserTypeUseCase;
+import com.tech_challange.grupo35.application.port.in.CreateUserType;
+import com.tech_challange.grupo35.application.port.in.DeleteUserType;
+import com.tech_challange.grupo35.application.port.in.GetAllUserTypes;
+import com.tech_challange.grupo35.application.port.in.GetUserTypeById;
+import com.tech_challange.grupo35.application.port.in.UpdateUserType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -30,11 +30,11 @@ import java.util.UUID;
 @Tag(name = "Tipos de Usuário", description = "Endpoints para gerenciar tipos de usuário")
 public class UserTypeController {
 
-    private final CreateUserTypeUseCase createUserTypeUseCase;
-    private final GetAllUserTypesUseCase getAllUserTypesUseCase;
-    private final GetUserTypeByIdUseCase getUserTypeByIdUseCase;
-    private final UpdateUserTypeUseCase updateUserTypeUseCase;
-    private final DeleteUserTypeUseCase deleteUserTypeUseCase;
+    private final CreateUserType createUserTypeUseCase;
+    private final GetAllUserTypes getAllUserTypesUseCase;
+    private final GetUserTypeById getUserTypeByIdUseCase;
+    private final UpdateUserType updateUserTypeUseCase;
+    private final DeleteUserType deleteUserTypeUseCase;
 
     @PostMapping
     @Operation(summary = "Criar tipo de usuário", description = "Cria um novo tipo de usuário com um nome único")

@@ -4,6 +4,7 @@ import com.tech_challange.grupo35.application.dto.UpdateCustomerRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
 import com.tech_challange.grupo35.application.mapper.CustomerMapper;
 import com.tech_challange.grupo35.application.mapper.UserMapper;
+import com.tech_challange.grupo35.application.port.in.UpdateCustomer;
 import com.tech_challange.grupo35.domain.exception.EmailAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.LoginAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.UserNotFoundException;
@@ -17,13 +18,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateCustomerUseCase {
+public class UpdateCustomerUseCase implements UpdateCustomer {
 
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserMapper userMapper;
 
+    @Override
     public UserResponse execute(UUID id, UpdateCustomerRequest request) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
