@@ -1,12 +1,12 @@
 package com.tech_challange.grupo35.application.usecase;
 
 import com.tech_challange.grupo35.application.dto.LoginResponse;
-import com.tech_challange.grupo35.application.port.TokenService;
+import com.tech_challange.grupo35.application.port.out.TokenService;
 import com.tech_challange.grupo35.application.port.in.LoginUser;
 import com.tech_challange.grupo35.domain.exception.InvalidPasswordException;
 import com.tech_challange.grupo35.domain.exception.UserNotFoundException;
 import com.tech_challange.grupo35.domain.model.User;
-import com.tech_challange.grupo35.domain.repository.UserRepository;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

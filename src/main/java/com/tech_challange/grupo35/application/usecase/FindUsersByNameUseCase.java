@@ -3,7 +3,7 @@ package com.tech_challange.grupo35.application.usecase;
 import com.tech_challange.grupo35.application.dto.UserResponse;
 import com.tech_challange.grupo35.application.mapper.UserMapper;
 import com.tech_challange.grupo35.application.port.in.FindUsersByName;
-import com.tech_challange.grupo35.domain.repository.UserRepository;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

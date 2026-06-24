@@ -1,7 +1,7 @@
 package com.tech_challange.grupo35.infrastructure.persistence.repository;
 
 import com.tech_challange.grupo35.domain.model.Customer;
-import com.tech_challange.grupo35.domain.repository.CustomerRepository;
+import com.tech_challange.grupo35.application.port.out.CustomerRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.jpa.CustomerJpaRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.mapper.CustomerEntityMapper;
 import lombok.RequiredArgsConstructor;

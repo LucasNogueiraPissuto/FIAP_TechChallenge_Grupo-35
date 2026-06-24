@@ -1,6 +1,6 @@
 package com.tech_challange.grupo35.infrastructure.security;
 
-import com.tech_challange.grupo35.application.port.TokenService;
+import com.tech_challange.grupo35.application.port.out.TokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

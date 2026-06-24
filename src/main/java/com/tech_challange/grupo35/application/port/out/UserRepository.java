@@ -1,4 +1,4 @@
-package com.tech_challange.grupo35.domain.repository;
+package com.tech_challange.grupo35.application.port.out;
 
 import com.tech_challange.grupo35.domain.model.User;
 

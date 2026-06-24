@@ -1,7 +1,7 @@
 package com.tech_challange.grupo35.infrastructure.persistence.repository;
 
 import com.tech_challange.grupo35.domain.model.User;
-import com.tech_challange.grupo35.domain.repository.UserRepository;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.jpa.UserJpaRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.mapper.UserEntityMapper;
 import lombok.RequiredArgsConstructor;

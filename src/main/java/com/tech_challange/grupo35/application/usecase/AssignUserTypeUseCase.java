@@ -8,8 +8,8 @@ import com.tech_challange.grupo35.domain.exception.UserNotFoundException;
 import com.tech_challange.grupo35.domain.exception.UserTypeNotFoundException;
 import com.tech_challange.grupo35.domain.model.User;
 import com.tech_challange.grupo35.domain.model.UserType;
-import com.tech_challange.grupo35.domain.repository.UserRepository;
-import com.tech_challange.grupo35.domain.repository.UserTypeRepository;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
+import com.tech_challange.grupo35.application.port.out.UserTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

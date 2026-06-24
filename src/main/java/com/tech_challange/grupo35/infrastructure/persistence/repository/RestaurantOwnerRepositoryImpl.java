@@ -1,7 +1,7 @@
 package com.tech_challange.grupo35.infrastructure.persistence.repository;
 
 import com.tech_challange.grupo35.domain.model.RestaurantOwner;
-import com.tech_challange.grupo35.domain.repository.RestaurantOwnerRepository;
+import com.tech_challange.grupo35.application.port.out.RestaurantOwnerRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.jpa.RestaurantOwnerJpaRepository;
 import com.tech_challange.grupo35.infrastructure.persistence.mapper.RestaurantOwnerEntityMapper;
 import lombok.RequiredArgsConstructor;

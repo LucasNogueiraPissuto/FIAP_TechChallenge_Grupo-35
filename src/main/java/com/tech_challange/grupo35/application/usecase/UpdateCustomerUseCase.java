@@ -9,8 +9,8 @@ import com.tech_challange.grupo35.domain.exception.EmailAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.LoginAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.UserNotFoundException;
 import com.tech_challange.grupo35.domain.model.Customer;
-import com.tech_challange.grupo35.domain.repository.CustomerRepository;
-import com.tech_challange.grupo35.domain.repository.UserRepository;
+import com.tech_challange.grupo35.application.port.out.CustomerRepository;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
