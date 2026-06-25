@@ -9,6 +9,7 @@ import com.tech_challange.grupo35.application.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,8 @@ public class ChangePasswordUseCase implements ChangePassword {
             throw new InvalidPasswordException();
         }
 
-        userRepository.save(user.withPassword(request.newPassword()));
+        user.setPassword(request.newPassword());
+        user.setLastUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

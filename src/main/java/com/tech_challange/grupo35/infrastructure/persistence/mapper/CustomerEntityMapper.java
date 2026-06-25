@@ -15,16 +15,17 @@ public class CustomerEntityMapper {
         if (entity == null) {
             return null;
         }
-        return new Customer(
-                entity.getId(),
-                entity.getName(),
-                entity.getEmail(),
-                entity.getLogin(),
-                entity.getPassword(),
-                entity.getAddress(),
-                entity.getLastUpdatedAt(),
-                userTypeMapper.toDomain(entity.getUserType()),
-                entity.getCpf());
+        Customer customer = new Customer();
+        customer.setId(entity.getId());
+        customer.setName(entity.getName());
+        customer.setEmail(entity.getEmail());
+        customer.setLogin(entity.getLogin());
+        customer.setPassword(entity.getPassword());
+        customer.setAddress(entity.getAddress());
+        customer.setLastUpdatedAt(entity.getLastUpdatedAt());
+        customer.setUserType(userTypeMapper.toDomain(entity.getUserType()));
+        customer.setCpf(entity.getCpf());
+        return customer;
     }
 
     public CustomerEntity toEntity(Customer domain) {

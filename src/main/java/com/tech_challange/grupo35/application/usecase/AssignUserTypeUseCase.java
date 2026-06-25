@@ -31,6 +31,7 @@ public class AssignUserTypeUseCase implements AssignUserType {
         UserType userType = userTypeRepository.findById(request.userTypeId())
                 .orElseThrow(() -> new UserTypeNotFoundException(request.userTypeId()));
 
-        return userMapper.toResponse(userRepository.save(user.withUserType(userType)));
+        user.setUserType(userType);
+        return userMapper.toResponse(userRepository.save(user));
     }
 }

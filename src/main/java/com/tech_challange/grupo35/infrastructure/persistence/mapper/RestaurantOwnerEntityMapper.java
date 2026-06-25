@@ -15,16 +15,17 @@ public class RestaurantOwnerEntityMapper {
         if (entity == null) {
             return null;
         }
-        return new RestaurantOwner(
-                entity.getId(),
-                entity.getName(),
-                entity.getEmail(),
-                entity.getLogin(),
-                entity.getPassword(),
-                entity.getAddress(),
-                entity.getLastUpdatedAt(),
-                userTypeMapper.toDomain(entity.getUserType()),
-                entity.getCnpj());
+        RestaurantOwner owner = new RestaurantOwner();
+        owner.setId(entity.getId());
+        owner.setName(entity.getName());
+        owner.setEmail(entity.getEmail());
+        owner.setLogin(entity.getLogin());
+        owner.setPassword(entity.getPassword());
+        owner.setAddress(entity.getAddress());
+        owner.setLastUpdatedAt(entity.getLastUpdatedAt());
+        owner.setUserType(userTypeMapper.toDomain(entity.getUserType()));
+        owner.setCnpj(entity.getCnpj());
+        return owner;
     }
 
     public RestaurantOwnerEntity toEntity(RestaurantOwner domain) {

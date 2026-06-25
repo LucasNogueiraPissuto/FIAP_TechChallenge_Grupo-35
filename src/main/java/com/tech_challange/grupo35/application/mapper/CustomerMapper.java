@@ -11,25 +11,24 @@ import java.time.LocalDateTime;
 public class CustomerMapper {
 
     public Customer toModel(CreateCustomerRequest request) {
-        return Customer.create(
-                request.name(),
-                request.email(),
-                request.login(),
-                request.password(),
-                request.address(),
-                request.cpf());
+        Customer customer = new Customer();
+        customer.setName(request.name());
+        customer.setEmail(request.email());
+        customer.setLogin(request.login());
+        customer.setPassword(request.password());
+        customer.setAddress(request.address());
+        customer.setCpf(request.cpf());
+        customer.setLastUpdatedAt(LocalDateTime.now());
+        return customer;
     }
 
     public Customer updateModel(Customer current, UpdateCustomerRequest request) {
-        return new Customer(
-                current.getId(),
-                request.name() != null ? request.name() : current.getName(),
-                request.email() != null ? request.email() : current.getEmail(),
-                request.login() != null ? request.login() : current.getLogin(),
-                current.getPassword(),
-                request.address() != null ? request.address() : current.getAddress(),
-                LocalDateTime.now(),
-                current.getUserType(),
-                request.cpf() != null ? request.cpf() : current.getCpf());
+        if (request.name() != null) current.setName(request.name());
+        if (request.email() != null) current.setEmail(request.email());
+        if (request.login() != null) current.setLogin(request.login());
+        if (request.address() != null) current.setAddress(request.address());
+        if (request.cpf() != null) current.setCpf(request.cpf());
+        current.setLastUpdatedAt(LocalDateTime.now());
+        return current;
     }
 }

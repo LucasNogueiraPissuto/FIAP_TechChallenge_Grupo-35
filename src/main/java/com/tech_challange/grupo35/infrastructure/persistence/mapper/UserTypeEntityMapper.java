@@ -11,7 +11,10 @@ public class UserTypeEntityMapper {
         if (entity == null) {
             return null;
         }
-        return new UserType(entity.getId(), entity.getName());
+        UserType userType = new UserType();
+        userType.setId(entity.getId());
+        userType.setName(entity.getName());
+        return userType;
     }
 
     public UserTypeEntity toEntity(UserType domain) {

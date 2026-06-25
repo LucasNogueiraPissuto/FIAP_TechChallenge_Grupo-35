@@ -28,7 +28,9 @@ public class UpdateUserTypeUseCase implements UpdateUserType {
             throw new UserTypeNameAlreadyExistsException(request.name());
         }
 
-        UserType saved = userTypeRepository.save(userType.withName(request.name()));
+        userType.setName(request.name());
+
+        UserType saved = userTypeRepository.save(userType);
         return new UserTypeResponse(saved.getId(), saved.getName());
     }
 }

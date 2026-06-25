@@ -11,25 +11,24 @@ import java.time.LocalDateTime;
 public class RestaurantOwnerMapper {
 
     public RestaurantOwner toModel(CreateRestaurantOwnerRequest request) {
-        return RestaurantOwner.create(
-                request.name(),
-                request.email(),
-                request.login(),
-                request.password(),
-                request.address(),
-                request.cnpj());
+        RestaurantOwner owner = new RestaurantOwner();
+        owner.setName(request.name());
+        owner.setEmail(request.email());
+        owner.setLogin(request.login());
+        owner.setPassword(request.password());
+        owner.setAddress(request.address());
+        owner.setCnpj(request.cnpj());
+        owner.setLastUpdatedAt(LocalDateTime.now());
+        return owner;
     }
 
     public RestaurantOwner updateModel(RestaurantOwner current, UpdateRestaurantOwnerRequest request) {
-        return new RestaurantOwner(
-                current.getId(),
-                request.name() != null ? request.name() : current.getName(),
-                request.email() != null ? request.email() : current.getEmail(),
-                request.login() != null ? request.login() : current.getLogin(),
-                current.getPassword(),
-                request.address() != null ? request.address() : current.getAddress(),
-                LocalDateTime.now(),
-                current.getUserType(),
-                request.cnpj() != null ? request.cnpj() : current.getCnpj());
+        if (request.name() != null) current.setName(request.name());
+        if (request.email() != null) current.setEmail(request.email());
+        if (request.login() != null) current.setLogin(request.login());
+        if (request.address() != null) current.setAddress(request.address());
+        if (request.cnpj() != null) current.setCnpj(request.cnpj());
+        current.setLastUpdatedAt(LocalDateTime.now());
+        return current;
     }
 }
