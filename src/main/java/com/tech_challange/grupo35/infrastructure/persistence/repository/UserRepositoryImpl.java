@@ -41,6 +41,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsByUserTypeId(UUID userTypeId) {
+        return jpaRepository.existsByUserTypeId(userTypeId);
+    }
+
+    @Override
     @Transactional
     public User save(User user) {
         return mapper.toDomain(jpaRepository.save(mapper.toEntity(user)));

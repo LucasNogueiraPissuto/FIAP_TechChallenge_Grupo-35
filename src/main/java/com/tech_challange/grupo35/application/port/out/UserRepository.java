@@ -12,6 +12,7 @@ public interface UserRepository {
     boolean existsByLogin(String login);
     boolean existsByCpf(String cpf);
     boolean existsById(UUID id);
+    boolean existsByUserTypeId(UUID userTypeId);
     User save(User user);
     List<User> findByNameContainingIgnoreCase(String name);
     Optional<User> findByLogin(String login);

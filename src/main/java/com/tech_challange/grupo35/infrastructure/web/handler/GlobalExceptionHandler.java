@@ -97,4 +97,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }
+
+    @ExceptionHandler(UserTypeInUseException.class)
+    public ProblemDetail handleUserTypeInUse(UserTypeInUseException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle("Tipo de Usuário em Uso");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
 }
