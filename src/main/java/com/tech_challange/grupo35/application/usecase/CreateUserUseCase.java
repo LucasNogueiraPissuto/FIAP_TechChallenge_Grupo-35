@@ -1,42 +1,38 @@
 package com.tech_challange.grupo35.application.usecase;
 
-import com.tech_challange.grupo35.application.dto.CreateCustomerRequest;
+import com.tech_challange.grupo35.application.dto.CreateUserRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
-import com.tech_challange.grupo35.application.mapper.CustomerMapper;
 import com.tech_challange.grupo35.application.mapper.UserMapper;
-import com.tech_challange.grupo35.application.port.in.CreateCustomer;
+import com.tech_challange.grupo35.application.port.in.CreateUser;
+import com.tech_challange.grupo35.application.port.out.UserRepository;
 import com.tech_challange.grupo35.domain.exception.CpfAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.EmailAlreadyExistsException;
 import com.tech_challange.grupo35.domain.exception.LoginAlreadyExistsException;
-import com.tech_challange.grupo35.domain.model.Customer;
-import com.tech_challange.grupo35.application.port.out.CustomerRepository;
-import com.tech_challange.grupo35.application.port.out.UserRepository;
+import com.tech_challange.grupo35.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCustomerUseCase implements CreateCustomer {
+public class CreateUserUseCase implements CreateUser {
 
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
-    private final CustomerMapper customerMapper;
     private final UserMapper userMapper;
 
     @Override
-    public UserResponse execute(CreateCustomerRequest request) {
+    public UserResponse execute(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException(request.email());
         }
         if (userRepository.existsByLogin(request.login())) {
             throw new LoginAlreadyExistsException(request.login());
         }
-        if (customerRepository.existsByCpf(request.cpf())) {
+        if (userRepository.existsByCpf(request.cpf())) {
             throw new CpfAlreadyExistsException(request.cpf());
         }
 
-        Customer customer = customerMapper.toModel(request);
+        User user = userMapper.toModel(request);
 
-        return userMapper.toResponse(customerRepository.save(customer));
+        return userMapper.toResponse(userRepository.save(user));
     }
 }

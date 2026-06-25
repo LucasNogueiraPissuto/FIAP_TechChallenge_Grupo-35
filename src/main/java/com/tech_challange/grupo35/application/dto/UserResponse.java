@@ -11,7 +11,6 @@ public record UserResponse(
         String address,
         LocalDateTime lastUpdatedAt,
         String cpf,
-        String cnpj,
         UUID userTypeId,
         String userTypeName
 ) {}

@@ -2,7 +2,7 @@ package com.tech_challange.grupo35.application.dto;
 
 import jakarta.validation.constraints.Email;
 
-public record UpdateRestaurantOwnerRequest(
+public record UpdateUserRequest(
         String name,
 
         @Email
@@ -12,5 +12,5 @@ public record UpdateRestaurantOwnerRequest(
 
         String address,
 
-        String cnpj
+        String cpf
 ) {}

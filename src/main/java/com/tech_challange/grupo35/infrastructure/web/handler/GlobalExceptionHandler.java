@@ -66,14 +66,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(CnpjAlreadyExistsException.class)
-    public ProblemDetail handleCnpjAlreadyExists(CnpjAlreadyExistsException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setTitle("CNPJ Já Cadastrado");
-        problemDetail.setDetail(ex.getMessage());
-        return problemDetail;
-    }
-
     @ExceptionHandler(InvalidPasswordException.class)
     public ProblemDetail handleInvalidPassword(InvalidPasswordException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);

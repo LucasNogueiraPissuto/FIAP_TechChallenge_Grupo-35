@@ -1,24 +1,24 @@
 {
   "info": {
     "_postman_id": "c4ac3336-2c65-4bbe-8b47-2d5dd41d2f97",
-    "name": "Tech Challenge Fase 1 - Usuários API Copy 3",
-    "description": "Collection Postman para validar os principais cenários exigidos no Tech Challenge Fase 1: cadastro, login, busca por nome, troca de senha, atualização e exclusão de usuários. Ajuste {{baseUrl}} se sua aplicação usar outra porta/context path.\n\nAtualizada para respeitar o SecurityConfig: /api/v1/users/login, POST /api/v1/customers e POST /api/v1/restaurant-owners são públicos; busca, atualização, troca de senha e exclusão usam Bearer Token salvo pela requisição de login na variável {{token}}.",
+    "name": "Tech Challenge Fase 2 - Usuários API",
+    "description": "Collection Postman para validar os cenários de usuários e tipos de usuário: cadastro, login, busca, associação de tipo, troca de senha, atualização e exclusão. Ajuste {{baseUrl}} se sua aplicação usar outra porta/context path.\n\nApós a remoção da herança Customer/RestaurantOwner, todo usuário é criado via POST /api/v1/users e atualizado via PATCH /api/v1/users/{id}. A distinção de tipo (Cliente/Dono) é feita pela associação a um UserType (PATCH /api/v1/users/{id}/user-type).\n\nEndpoints públicos: POST /api/v1/users, /api/v1/users/login e /api/v1/user-types(/**). Os demais (busca, associação de tipo, troca de senha, atualização e exclusão de usuário) exigem Bearer Token salvo pela requisição de login na variável {{token}}.\n\nExecute as pastas na ordem (01 → 08): elas salvam customerId, ownerId, userTypeId e token em variáveis de coleção usadas pelas requisições seguintes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "38191128"
   },
   "item": [
     {
-      "name": "01 - Cadastro de clientes",
+      "name": "01 - Cadastro de usuários",
       "item": [
         {
-          "name": "Criar cliente - sucesso",
+          "name": "Criar usuário (cliente) - sucesso",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 201 - cliente criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Status 201 - usuário criado', function () { pm.response.to.have.status(201); });",
                   "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('customerId', json.id); });"
                 ]
               }
@@ -42,22 +42,22 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers",
+              "raw": "{{baseUrl}}/api/v1/users",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers"
+                "users"
               ]
             },
-            "description": "Cria um cliente válido e salva o id em {{customerId}}."
+            "description": "Cria um usuário válido e salva o id em {{customerId}}."
           },
           "response": []
         },
         {
-          "name": "Criar cliente - erro por e-mail duplicado",
+          "name": "Criar usuário - erro por e-mail duplicado",
           "event": [
             {
               "listen": "test",
@@ -79,7 +79,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"João Cliente\",\n  \"email\": \"joao.cliente@example.com\",\n  \"login\": \"{{customerLogin}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"address\": \"Rua das Flores, 123 - São Paulo/SP\",\n  \"cpf\": \"12345678901\"\n}",
+              "raw": "{\n  \"name\": \"João Cliente\",\n  \"email\": \"joao.cliente@example.com\",\n  \"login\": \"login.diferente\",\n  \"password\": \"{{customerPassword}}\",\n  \"address\": \"Rua das Flores, 123 - São Paulo/SP\",\n  \"cpf\": \"11111111111\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -87,22 +87,67 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers",
+              "raw": "{{baseUrl}}/api/v1/users",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers"
+                "users"
               ]
             },
-            "description": "Executar depois do cadastro com sucesso. Esperado: 409 Conflict se o e-mail já existir."
+            "description": "Executar depois do cadastro com sucesso. Usa login e CPF diferentes, mas o mesmo e-mail já cadastrado. Esperado: 409 Conflict."
           },
           "response": []
         },
         {
-          "name": "Criar cliente - erro por CPF duplicado",
+          "name": "Criar usuário - erro por login duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 - conflito de login esperado', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Cliente\",\n  \"email\": \"email.diferente@example.com\",\n  \"login\": \"{{customerLogin}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"address\": \"Rua das Flores, 123 - São Paulo/SP\",\n  \"cpf\": \"22222222222\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Executar depois do cadastro com sucesso. Usa e-mail e CPF diferentes, mas o mesmo login já cadastrado. Esperado: 409 Conflict."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar usuário - erro por CPF duplicado",
           "event": [
             {
               "listen": "test",
@@ -132,14 +177,14 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers",
+              "raw": "{{baseUrl}}/api/v1/users",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers"
+                "users"
               ]
             },
             "description": "Executar depois do cadastro com sucesso. Usa e-mail e login diferentes, mas o mesmo CPF (12345678901) já cadastrado. Esperado: 409 Conflict."
@@ -147,7 +192,7 @@
           "response": []
         },
         {
-          "name": "Criar cliente - erro por campos obrigatórios faltando",
+          "name": "Criar usuário - erro por campos obrigatórios faltando",
           "event": [
             {
               "listen": "test",
@@ -177,34 +222,29 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers",
+              "raw": "{{baseUrl}}/api/v1/users",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers"
+                "users"
               ]
             },
             "description": "Valida @NotBlank e @Email. Esperado: 400 Bad Request."
           },
           "response": []
-        }
-      ]
-    },
-    {
-      "name": "02 - Cadastro de donos de restaurante",
-      "item": [
+        },
         {
-          "name": "Criar dono de restaurante - sucesso",
+          "name": "Criar usuário (dono) - sucesso",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 201 - dono criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Status 201 - usuário criado', function () { pm.response.to.have.status(201); });",
                   "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('ownerId', json.id); });"
                 ]
               }
@@ -220,7 +260,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Maria Restaurante\",\n  \"email\": \"maria.owner@example.com\",\n  \"login\": \"{{ownerLogin}}\",\n  \"password\": \"{{ownerPassword}}\",\n  \"address\": \"Av. Central, 500 - Rio de Janeiro/RJ\",\n  \"cnpj\": \"12345678000199\"\n}",
+              "raw": "{\n  \"name\": \"Maria Restaurante\",\n  \"email\": \"maria.owner@example.com\",\n  \"login\": \"{{ownerLogin}}\",\n  \"password\": \"{{ownerPassword}}\",\n  \"address\": \"Av. Central, 500 - Rio de Janeiro/RJ\",\n  \"cpf\": \"98765432100\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -228,29 +268,35 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners",
+              "raw": "{{baseUrl}}/api/v1/users",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "restaurant-owners"
+                "users"
               ]
             },
-            "description": "Cria um dono de restaurante válido e salva o id em {{ownerId}}."
+            "description": "Cria um segundo usuário (que poderá ser associado ao tipo 'Dono de Restaurante') e salva o id em {{ownerId}}."
           },
           "response": []
-        },
+        }
+      ]
+    },
+    {
+      "name": "02 - Tipos de usuário (CRUD)",
+      "item": [
         {
-          "name": "Criar dono de restaurante - erro por e-mail duplicado",
+          "name": "Criar tipo - sucesso",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 409 - conflito esperado', function () { pm.response.to.have.status(409); });"
+                  "pm.test('Status 201 - tipo criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('userTypeId', json.id); });"
                 ]
               }
             }
@@ -265,7 +311,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Maria Restaurante\",\n  \"email\": \"maria.owner@example.com\",\n  \"login\": \"{{ownerLogin}}\",\n  \"password\": \"{{ownerPassword}}\",\n  \"address\": \"Av. Central, 500 - Rio de Janeiro/RJ\",\n  \"cnpj\": \"12345678000199\"\n}",
+              "raw": "{\n  \"name\": \"Cliente\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -273,29 +319,29 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners",
+              "raw": "{{baseUrl}}/api/v1/user-types",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "restaurant-owners"
+                "user-types"
               ]
             },
-            "description": "Executar depois do cadastro com sucesso. Esperado: 409 Conflict se o e-mail já existir."
+            "description": "Cria um tipo de usuário e salva o id em {{userTypeId}}."
           },
           "response": []
         },
         {
-          "name": "Criar dono de restaurante - erro por CNPJ duplicado",
+          "name": "Criar tipo - erro por nome duplicado",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 409 - conflito de CNPJ esperado', function () { pm.response.to.have.status(409); });"
+                  "pm.test('Status 409 - conflito de nome esperado', function () { pm.response.to.have.status(409); });"
                 ]
               }
             }
@@ -310,7 +356,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Outro Dono\",\n  \"email\": \"outro.dono@example.com\",\n  \"login\": \"outro.owner\",\n  \"password\": \"Senha@123\",\n  \"address\": \"Rua Diferente, 999 - Curitiba/PR\",\n  \"cnpj\": \"12345678000199\"\n}",
+              "raw": "{\n  \"name\": \"Cliente\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -318,22 +364,22 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners",
+              "raw": "{{baseUrl}}/api/v1/user-types",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "restaurant-owners"
+                "user-types"
               ]
             },
-            "description": "Executar depois do cadastro com sucesso. Usa e-mail e login diferentes, mas o mesmo CNPJ (12345678000199) já cadastrado. Esperado: 409 Conflict."
+            "description": "Executar depois da criação com sucesso. Esperado: 409 Conflict (nome único)."
           },
           "response": []
         },
         {
-          "name": "Criar dono de restaurante - erro por campos obrigatórios faltando",
+          "name": "Criar tipo - erro por nome em branco",
           "event": [
             {
               "listen": "test",
@@ -355,7 +401,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"\",\n  \"email\": \"email-invalido\",\n  \"login\": \"\",\n  \"password\": \"\",\n  \"address\": \"\",\n  \"cnpj\": \"\"\n}",
+              "raw": "{\n  \"name\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -363,17 +409,315 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners",
+              "raw": "{{baseUrl}}/api/v1/user-types",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "restaurant-owners"
+                "user-types"
               ]
             },
-            "description": "Valida @NotBlank e @Email. Esperado: 400 Bad Request."
+            "description": "Valida @NotBlank. Esperado: 400 Bad Request."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar tipos - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - lista retornada', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta é array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types"
+              ]
+            },
+            "description": "Lista todos os tipos de usuário cadastrados."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar tipo por id - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo encontrado', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/{{userTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "{{userTypeId}}"
+              ]
+            },
+            "description": "Busca o tipo criado em {{userTypeId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar tipo por id - erro id inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - tipo não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar tipo - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo atualizado', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/{{userTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "{{userTypeId}}"
+              ]
+            },
+            "description": "Atualiza o nome do tipo. Mantém 'Cliente' para preservar a associação posterior."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar tipo - erro id inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - tipo não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inexistente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar tipo descartável - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 - tipo criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('throwawayUserTypeId', json.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tipo Temporário\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types"
+              ]
+            },
+            "description": "Cria um tipo não associado a nenhum usuário, apenas para validar a exclusão com sucesso. Salva o id em {{throwawayUserTypeId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar tipo - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204 - tipo deletado', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/{{throwawayUserTypeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "{{throwawayUserTypeId}}"
+              ]
+            },
+            "description": "Deleta o tipo descartável (sem usuários associados). Esperado: 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar tipo - erro id inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - tipo não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found. (Não deletamos {{userTypeId}} para preservá-lo para a associação.)"
           },
           "response": []
         }
@@ -476,6 +820,52 @@
           "response": []
         },
         {
+          "name": "Login - erro login inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - usuário não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"usuario.inexistente\",\n  \"password\": \"qualquer-senha\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "login"
+              ]
+            },
+            "description": "Login que não existe. Esperado: 404 Not Found (UserNotFoundException)."
+          },
+          "response": []
+        },
+        {
           "name": "Login cliente - sucesso após troca de senha",
           "event": [
             {
@@ -518,7 +908,7 @@
                 "login"
               ]
             },
-            "description": "Executar depois da troca de senha com sucesso."
+            "description": "Executar depois da troca de senha com sucesso (pasta 06)."
           },
           "response": []
         }
@@ -619,7 +1009,184 @@
       ]
     },
     {
-      "name": "05 - Troca de senha",
+      "name": "05 - Associação de tipo de usuário",
+      "item": [
+        {
+          "name": "Associar tipo ao usuário - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo associado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('userTypeId presente na resposta', function () { const json = pm.response.json(); pm.expect(json.userTypeId).to.exist; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userTypeId\": \"{{userTypeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{customerId}}/user-type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{customerId}}",
+                "user-type"
+              ]
+            },
+            "description": "Associa o tipo {{userTypeId}} (criado na pasta 02) ao usuário {{customerId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Associar tipo - erro usuário inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - usuário não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userTypeId\": \"{{userTypeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/00000000-0000-0000-0000-000000000000/user-type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "00000000-0000-0000-0000-000000000000",
+                "user-type"
+              ]
+            },
+            "description": "Esperado: 404 Not Found (usuário inexistente)."
+          },
+          "response": []
+        },
+        {
+          "name": "Associar tipo - erro tipo inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - tipo não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userTypeId\": \"00000000-0000-0000-0000-000000000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{customerId}}/user-type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{customerId}}",
+                "user-type"
+              ]
+            },
+            "description": "Esperado: 404 Not Found (tipo de usuário inexistente)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 - Troca de senha",
       "item": [
         {
           "name": "Alterar senha cliente - sucesso",
@@ -795,17 +1362,73 @@
       ]
     },
     {
-      "name": "06 - Atualização de dados",
+      "name": "07 - Atualização de dados",
       "item": [
         {
-          "name": "Atualizar cliente - sucesso",
+          "name": "Atualizar usuário - erro e-mail duplicado",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 200 - cliente atualizado', function () { pm.response.to.have.status(200); });"
+                  "pm.test('Status 409 - conflito de e-mail esperado', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria.owner@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Tenta atualizar o cliente com o e-mail já usado pelo dono. Executar antes das atualizações com sucesso. Esperado: 409 Conflict."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar usuário (cliente) - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - usuário atualizado', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -838,30 +1461,30 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers/{{customerId}}",
+              "raw": "{{baseUrl}}/api/v1/users/{{customerId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers",
+                "users",
                 "{{customerId}}"
               ]
             },
-            "description": "Atualiza dados cadastrais do cliente. Não altera senha."
+            "description": "Atualiza dados cadastrais do usuário. Não altera senha. Mantém o mesmo CPF."
           },
           "response": []
         },
         {
-          "name": "Atualizar cliente - erro id inexistente",
+          "name": "Atualizar usuário - erro id inexistente",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 404 - cliente não encontrado', function () { pm.response.to.have.status(404); });"
+                  "pm.test('Status 404 - usuário não encontrado', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
@@ -886,7 +1509,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Cliente Inexistente\"\n}",
+              "raw": "{\n  \"name\": \"Usuário Inexistente\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -894,14 +1517,14 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/customers/00000000-0000-0000-0000-000000000000",
+              "raw": "{{baseUrl}}/api/v1/users/00000000-0000-0000-0000-000000000000",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "customers",
+                "users",
                 "00000000-0000-0000-0000-000000000000"
               ]
             },
@@ -910,14 +1533,14 @@
           "response": []
         },
         {
-          "name": "Atualizar dono de restaurante - sucesso",
+          "name": "Atualizar usuário (dono) - sucesso",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 200 - dono atualizado', function () { pm.response.to.have.status(200); });"
+                  "pm.test('Status 200 - usuário atualizado', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -942,7 +1565,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Maria Restaurante Atualizada\",\n  \"email\": \"maria.owner.atualizada@example.com\",\n  \"login\": \"maria.owner.updated\",\n  \"address\": \"Av. Atualizada, 999 - Rio de Janeiro/RJ\",\n  \"cnpj\": \"12345678000199\"\n}",
+              "raw": "{\n  \"name\": \"Maria Restaurante Atualizada\",\n  \"email\": \"maria.owner.atualizada@example.com\",\n  \"login\": \"maria.owner.updated\",\n  \"address\": \"Av. Atualizada, 999 - Rio de Janeiro/RJ\",\n  \"cpf\": \"98765432100\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -950,81 +1573,25 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners/{{ownerId}}",
+              "raw": "{{baseUrl}}/api/v1/users/{{ownerId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "restaurant-owners",
+                "users",
                 "{{ownerId}}"
               ]
             },
-            "description": "Atualiza dados cadastrais do dono de restaurante. Não altera senha."
-          },
-          "response": []
-        },
-        {
-          "name": "Atualizar dono de restaurante - erro id inexistente",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 404 - dono não encontrado', function () { pm.response.to.have.status(404); });"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Dono Inexistente\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/restaurant-owners/00000000-0000-0000-0000-000000000000",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "restaurant-owners",
-                "00000000-0000-0000-0000-000000000000"
-              ]
-            },
-            "description": "Esperado: 404 Not Found."
+            "description": "Atualiza dados cadastrais do segundo usuário. Não altera senha. Mantém o mesmo CPF."
           },
           "response": []
         }
       ]
     },
     {
-      "name": "07 - Exclusão",
+      "name": "08 - Exclusão",
       "item": [
         {
           "name": "Deletar usuário(cliente) - sucesso",
@@ -1134,6 +1701,14 @@
     },
     {
       "key": "ownerId",
+      "value": ""
+    },
+    {
+      "key": "userTypeId",
+      "value": ""
+    },
+    {
+      "key": "throwawayUserTypeId",
       "value": ""
     },
     {

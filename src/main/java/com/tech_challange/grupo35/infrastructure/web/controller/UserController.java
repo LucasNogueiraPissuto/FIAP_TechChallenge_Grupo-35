@@ -2,14 +2,18 @@ package com.tech_challange.grupo35.infrastructure.web.controller;
 
 import com.tech_challange.grupo35.application.dto.AssignUserTypeRequest;
 import com.tech_challange.grupo35.application.dto.ChangePasswordRequest;
+import com.tech_challange.grupo35.application.dto.CreateUserRequest;
 import com.tech_challange.grupo35.application.dto.LoginRequest;
 import com.tech_challange.grupo35.application.dto.LoginResponse;
+import com.tech_challange.grupo35.application.dto.UpdateUserRequest;
 import com.tech_challange.grupo35.application.dto.UserResponse;
 import com.tech_challange.grupo35.application.port.in.AssignUserType;
 import com.tech_challange.grupo35.application.port.in.ChangePassword;
+import com.tech_challange.grupo35.application.port.in.CreateUser;
 import com.tech_challange.grupo35.application.port.in.DeleteUser;
 import com.tech_challange.grupo35.application.port.in.FindUsersByName;
 import com.tech_challange.grupo35.application.port.in.LoginUser;
+import com.tech_challange.grupo35.application.port.in.UpdateUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -19,6 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +36,140 @@ import java.util.UUID;
 @Tag(name = "Usuários", description = "Endpoints para operações gerais de usuários")
 public class UserController {
 
+    private final CreateUser createUserUseCase;
+    private final UpdateUser updateUserUseCase;
     private final ChangePassword changePasswordUseCase;
     private final DeleteUser deleteUserUseCase;
     private final FindUsersByName findUsersByNameUseCase;
     private final LoginUser loginUseCase;
     private final AssignUserType assignUserTypeUseCase;
+
+    @PostMapping
+    @Operation(summary = "Criar um novo usuário", description = "Cria um novo usuário com os detalhes fornecidos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class),
+                    examples = @ExampleObject(value = """
+                        {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "João Silva",
+                          "email": "joao.silva@email.com",
+                          "login": "joaosilva",
+                          "address": "Rua das Flores, 100, São Paulo - SP",
+                          "lastUpdatedAt": "2024-01-15T10:30:00",
+                          "cpf": "123.456.789-00",
+                          "userTypeId": null,
+                          "userTypeName": null
+                        }
+                        """))),
+            @ApiResponse(responseCode = "409", description = "E-mail, login ou CPF já cadastrado",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Email Já Cadastrado",
+                          "status": 409,
+                          "detail": "O email joao.silva@email.com já está em uso."
+                        }
+                        """))),
+            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Dados de Entrada Inválidos",
+                          "status": 400,
+                          "detail": "Um ou mais campos possuem valores inválidos.",
+                          "erros": [
+                            { "campo": "email", "mensagem": "must not be blank" }
+                          ]
+                        }
+                        """)))
+    })
+    public ResponseEntity<UserResponse> createUser(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "name": "João Silva",
+                          "email": "joao.silva@email.com",
+                          "login": "joaosilva",
+                          "password": "senha123",
+                          "address": "Rua das Flores, 100, São Paulo - SP",
+                          "cpf": "123.456.789-00"
+                        }
+                        """)))
+            @RequestBody @Valid CreateUserRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createUserUseCase.execute(request));
+    }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Atualizar dados do usuário", description = "Atualiza os dados de um usuário existente. Todos os campos são opcionais.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class),
+                    examples = @ExampleObject(value = """
+                        {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "João Silva Atualizado",
+                          "email": "joao.silva@email.com",
+                          "login": "joaosilva",
+                          "address": "Av. Paulista, 1000, São Paulo - SP",
+                          "lastUpdatedAt": "2024-01-15T11:00:00",
+                          "cpf": "123.456.789-00",
+                          "userTypeId": null,
+                          "userTypeName": null
+                        }
+                        """))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Usuário Não Encontrado",
+                          "status": 404,
+                          "detail": "Usuário com ID a1b2c3d4-e5f6-7890-abcd-ef1234567890 não encontrado."
+                        }
+                        """))),
+            @ApiResponse(responseCode = "409", description = "E-mail, login ou CPF já cadastrado",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Email Já Cadastrado",
+                          "status": 409,
+                          "detail": "O email joao.silva@email.com já está em uso."
+                        }
+                        """))),
+            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Dados de Entrada Inválidos",
+                          "status": 400,
+                          "detail": "Um ou mais campos possuem valores inválidos.",
+                          "erros": [
+                            { "campo": "email", "mensagem": "must be a well-formed email address" }
+                          ]
+                        }
+                        """)))
+    })
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable UUID id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "name": "João Silva Atualizado",
+                          "address": "Av. Paulista, 1000, São Paulo - SP"
+                        }
+                        """)))
+            @RequestBody @Valid UpdateUserRequest request) {
+
+        return ResponseEntity.ok(updateUserUseCase.execute(id, request));
+    }
 
     @PatchMapping("/{id}/password")
     @Operation(summary = "Alterar senha do usuário", description = "Altera a senha de um usuário específico")
@@ -113,7 +247,8 @@ public class UserController {
                             "address": "Rua das Flores, 100, São Paulo - SP",
                             "lastUpdatedAt": "2024-01-15T10:30:00",
                             "cpf": "123.456.789-00",
-                            "cnpj": null
+                            "userTypeId": null,
+                            "userTypeName": null
                           }
                         ]
                         """)))

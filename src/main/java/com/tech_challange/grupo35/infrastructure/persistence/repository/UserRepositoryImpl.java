@@ -36,6 +36,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsByCpf(String cpf) {
+        return jpaRepository.existsByCpf(cpf);
+    }
+
+    @Override
     @Transactional
     public User save(User user) {
         return mapper.toDomain(jpaRepository.save(mapper.toEntity(user)));

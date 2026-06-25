@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public abstract class User {
+public class User {
 
     private UUID id;
     private String name;
@@ -13,6 +13,7 @@ public abstract class User {
     private String login;
     private String password;
     private String address;
+    private String cpf;
     private LocalDateTime lastUpdatedAt;
     private UserType userType;
 }
