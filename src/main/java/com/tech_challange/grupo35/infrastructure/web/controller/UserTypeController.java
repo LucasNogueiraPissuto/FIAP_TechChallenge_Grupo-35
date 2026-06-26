@@ -7,6 +7,7 @@ import com.tech_challange.grupo35.application.port.in.CreateUserType;
 import com.tech_challange.grupo35.application.port.in.DeleteUserType;
 import com.tech_challange.grupo35.application.port.in.GetAllUserTypes;
 import com.tech_challange.grupo35.application.port.in.GetUserTypeById;
+import com.tech_challange.grupo35.application.port.in.GetUserTypeByName;
 import com.tech_challange.grupo35.application.port.in.UpdateUserType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +34,7 @@ public class UserTypeController {
     private final CreateUserType createUserTypeUseCase;
     private final GetAllUserTypes getAllUserTypesUseCase;
     private final GetUserTypeById getUserTypeByIdUseCase;
+    private final GetUserTypeByName getUserTypeByNameUseCase;
     private final UpdateUserType updateUserTypeUseCase;
     private final DeleteUserType deleteUserTypeUseCase;
 
@@ -95,6 +97,29 @@ public class UserTypeController {
     })
     public ResponseEntity<List<UserTypeResponse>> findAll() {
         return ResponseEntity.ok(getAllUserTypesUseCase.execute());
+    }
+
+    @GetMapping(params = "name")
+    @Operation(summary = "Buscar tipo de usuário por nome", description = "Retorna um tipo de usuário específico pelo seu nome (único)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tipo de usuário encontrado",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserTypeResponse.class),
+                    examples = @ExampleObject(value = """
+                        { "id": "c3d4e5f6-a7b8-9012-cdef-012345678901", "name": "Cliente" }
+                        """))),
+            @ApiResponse(responseCode = "404", description = "Tipo de usuário não encontrado",
+                content = @Content(mediaType = "application/problem+json",
+                    examples = @ExampleObject(value = """
+                        {
+                          "type": "about:blank",
+                          "title": "Tipo de Usuário Não Encontrado",
+                          "status": 404,
+                          "detail": "Tipo de usuário não encontrado com nome: Cliente"
+                        }
+                        """)))
+    })
+    public ResponseEntity<UserTypeResponse> findByName(@RequestParam String name) {
+        return ResponseEntity.ok(getUserTypeByNameUseCase.execute(name));
     }
 
     @GetMapping("/{id}")

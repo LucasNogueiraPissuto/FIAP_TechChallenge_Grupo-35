@@ -520,6 +520,81 @@
           "response": []
         },
         {
+          "name": "Buscar tipo por nome - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo encontrado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Nome confere', function () { pm.expect(pm.response.json().name).to.eql('Cliente'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types?name=Cliente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Cliente"
+                }
+              ]
+            },
+            "description": "Busca o tipo pelo nome único. Esperado: 200 com o tipo (e seu id)."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar tipo por nome - erro não encontrado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - tipo não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types?name=Inexistente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Inexistente"
+                }
+              ]
+            },
+            "description": "Nome que não existe. Esperado: 404 Not Found."
+          },
+          "response": []
+        },
+        {
           "name": "Atualizar tipo - sucesso",
           "event": [
             {
