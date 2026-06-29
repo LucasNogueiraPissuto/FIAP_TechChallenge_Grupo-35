@@ -1795,6 +1795,894 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "09 - Restaurantes",
+      "item": [
+        {
+          "name": "Setup - Criar usuário dono (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 - usuário criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('restoOwnerId', json.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Carlos Dono Restaurante\",\n  \"email\": \"carlos.resto.owner@example.com\",\n  \"login\": \"{{restoOwnerLogin}}\",\n  \"password\": \"{{restoOwnerPassword}}\",\n  \"address\": \"Rua dos Restaurantes, 10 - São Paulo/SP\",\n  \"cpf\": \"33344455566\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Cria o usuário que será o dono do restaurante e salva o id em {{restoOwnerId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Setup - Criar usuário não-dono (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 - usuário criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('restoNonOwnerId', json.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ana Cliente\",\n  \"email\": \"ana.resto.nonowner@example.com\",\n  \"login\": \"ana.resto.nonowner\",\n  \"password\": \"Senha@123\",\n  \"address\": \"Rua Qualquer, 20 - São Paulo/SP\",\n  \"cpf\": \"77788899900\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Cria um usuário SEM o tipo RESTAURANT_OWNER (usado no cenário 409). Salva o id em {{restoNonOwnerId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Setup - Login dono (salva token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - login realizado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Token JWT retornado', function () { const json = pm.response.json(); pm.expect(json.token).to.exist; pm.collectionVariables.set('restoToken', json.token); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{restoOwnerLogin}}\",\n  \"password\": \"{{restoOwnerPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "login"
+              ]
+            },
+            "description": "Faz login para obter o Bearer token usado pelos endpoints de restaurante. Salva em {{restoToken}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar tipo RESTAURANT_OWNER (seed) - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo encontrado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Nome é RESTAURANT_OWNER (semeado via Flyway)', function () { const json = pm.response.json(); pm.expect(json.name).to.eql('RESTAURANT_OWNER'); pm.collectionVariables.set('restoOwnerTypeId', json.id); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/user-types?name=RESTAURANT_OWNER",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user-types"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "RESTAURANT_OWNER"
+                }
+              ]
+            },
+            "description": "Busca o tipo canônico RESTAURANT_OWNER, que já existe por causa do seed (V4). Salva o id em {{restoOwnerTypeId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Associar RESTAURANT_OWNER ao dono - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - tipo associado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('userTypeName é RESTAURANT_OWNER', function () { pm.expect(pm.response.json().userTypeName).to.eql('RESTAURANT_OWNER'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userTypeId\": \"{{restoOwnerTypeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{restoOwnerId}}/user-type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{restoOwnerId}}",
+                "user-type"
+              ]
+            },
+            "description": "Transforma o usuário {{restoOwnerId}} em dono de restaurante, associando-o ao tipo RESTAURANT_OWNER."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar restaurante - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 - restaurante criado', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Resposta possui id', function () { const json = pm.response.json(); pm.expect(json.id).to.exist; pm.collectionVariables.set('restaurantId', json.id); });",
+                  "pm.test('Dono retornado é RESTAURANT_OWNER', function () { pm.expect(pm.response.json().owner.userType).to.eql('RESTAURANT_OWNER'); });",
+                  "pm.test('Endereço embutido retornado', function () { pm.expect(pm.response.json().address.city).to.eql('São Paulo'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cantina da Nonna\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Seg-Sex 11:00-23:00\",\n  \"ownerId\": \"{{restoOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "Cria um restaurante com dono RESTAURANT_OWNER válido. Salva o id em {{restaurantId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar restaurante - erro sem token (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403 - acesso negado sem token', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cantina da Nonna\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Seg-Sex 11:00-23:00\",\n  \"ownerId\": \"{{restoOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "Endpoint protegido. Sem Bearer token. Esperado: 403 Forbidden."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar restaurante - erro campos inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 - validação esperada', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"address\": {\n    \"street\": \"\",\n    \"number\": \"\",\n    \"neighborhood\": \"\",\n    \"city\": \"\",\n    \"state\": \"\",\n    \"zipCode\": \"\"\n  },\n  \"cuisineType\": \"\",\n  \"openingHours\": \"\",\n  \"ownerId\": \"{{restoOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "Valida @NotBlank dos campos e do endereço embutido (@Valid). Esperado: 400 Bad Request."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar restaurante - erro dono inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - usuário dono não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Restaurante Sem Dono\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Seg-Sex 11:00-23:00\",\n  \"ownerId\": \"00000000-0000-0000-0000-000000000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "ownerId inexistente. Esperado: 404 Not Found (UserNotFoundException)."
+          },
+          "response": []
+        },
+        {
+          "name": "Criar restaurante - erro dono não é RESTAURANT_OWNER (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 - dono inválido', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Restaurante Dono Inválido\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Seg-Sex 11:00-23:00\",\n  \"ownerId\": \"{{restoNonOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "ownerId aponta para um usuário existente que NÃO é RESTAURANT_OWNER. Esperado: 409 Conflict (InvalidRestaurantOwnerException)."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar restaurantes - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - lista retornada', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Resposta é array', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants"
+              ]
+            },
+            "description": "Lista todos os restaurantes cadastrados."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar restaurante por id - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - restaurante encontrado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Id confere', function () { pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('restaurantId')); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            },
+            "description": "Busca o restaurante criado em {{restaurantId}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar restaurante por id - erro inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - restaurante não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found (RestaurantNotFoundException)."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar restaurante - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 - restaurante atualizado', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Nome atualizado', function () { pm.expect(pm.response.json().name).to.eql('Cantina da Nonna - Filial'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cantina da Nonna - Filial\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"200\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana Contemporânea\",\n  \"openingHours\": \"Ter-Dom 12:00-23:00\",\n  \"ownerId\": \"{{restoOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            },
+            "description": "Atualiza o restaurante (substituição completa). Mantém um dono RESTAURANT_OWNER válido."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar restaurante - erro dono não é RESTAURANT_OWNER (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409 - dono inválido', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cantina da Nonna - Filial\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"200\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Ter-Dom 12:00-23:00\",\n  \"ownerId\": \"{{restoNonOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            },
+            "description": "Tenta atualizar apontando para um dono que não é RESTAURANT_OWNER. Esperado: 409 Conflict."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar restaurante - erro id inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - restaurante não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inexistente\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"100\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01000-000\"\n  },\n  \"cuisineType\": \"Italiana\",\n  \"openingHours\": \"Seg-Sex 11:00-23:00\",\n  \"ownerId\": \"{{restoOwnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found (restaurante inexistente). A validação do restaurante ocorre antes da do dono."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar restaurante - sucesso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204 - restaurante deletado', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            },
+            "description": "Remove o restaurante criado. Esperado: 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar restaurante - erro id inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 - restaurante não encontrado', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{restoToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "restaurants",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Esperado: 404 Not Found."
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1840,6 +2728,34 @@
     },
     {
       "key": "ownerPassword",
+      "value": "Senha@123"
+    },
+    {
+      "key": "restoOwnerId",
+      "value": ""
+    },
+    {
+      "key": "restoNonOwnerId",
+      "value": ""
+    },
+    {
+      "key": "restoOwnerTypeId",
+      "value": ""
+    },
+    {
+      "key": "restoToken",
+      "value": ""
+    },
+    {
+      "key": "restaurantId",
+      "value": ""
+    },
+    {
+      "key": "restoOwnerLogin",
+      "value": "carlos.resto.owner"
+    },
+    {
+      "key": "restoOwnerPassword",
       "value": "Senha@123"
     }
   ]
