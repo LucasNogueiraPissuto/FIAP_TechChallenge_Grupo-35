@@ -105,4 +105,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setDetail(ex.getMessage());
         return problemDetail;
     }
+
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ProblemDetail handleRestaurantNotFound(RestaurantNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Restaurante Não Encontrado");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(InvalidRestaurantOwnerException.class)
+    public ProblemDetail handleInvalidRestaurantOwner(InvalidRestaurantOwnerException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle("Dono de Restaurante Inválido");
+        problemDetail.setDetail(ex.getMessage());
+        return problemDetail;
+    }
 }
