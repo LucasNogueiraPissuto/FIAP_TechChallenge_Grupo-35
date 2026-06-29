@@ -90,8 +90,8 @@ public class UserTypeController {
                 content = @Content(mediaType = "application/json",
                     examples = @ExampleObject(value = """
                         [
-                          { "id": "c3d4e5f6-a7b8-9012-cdef-012345678901", "name": "Cliente" },
-                          { "id": "d4e5f6a7-b8c9-0123-defa-123456789012", "name": "Dono de Restaurante" }
+                          { "id": "c3d4e5f6-a7b8-9012-cdef-012345678901", "name": "CUSTOMER" },
+                          { "id": "d4e5f6a7-b8c9-0123-defa-123456789012", "name": "RESTAURANT_OWNER" }
                         ]
                         """)))
     })
