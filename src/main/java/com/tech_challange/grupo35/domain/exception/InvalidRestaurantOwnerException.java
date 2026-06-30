@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public class InvalidRestaurantOwnerException extends RuntimeException {
     public InvalidRestaurantOwnerException(UUID ownerId) {
-        super("Usuário não pode ser dono de restaurante (tipo inválido): " + ownerId);
+        super("O usuário informado como dono deve ser do tipo RESTAURANT_OWNER: " + ownerId);
     }
 }

@@ -99,7 +99,7 @@ public class RestaurantController {
                           "type": "about:blank",
                           "title": "Dono de Restaurante Inválido",
                           "status": 409,
-                          "detail": "Usuário não pode ser dono de restaurante (tipo inválido): a1b2c3d4-e5f6-7890-abcd-ef0123456789"
+                          "detail": "O usuário informado como dono deve ser do tipo RESTAURANT_OWNER: a1b2c3d4-e5f6-7890-abcd-ef0123456789"
                         }
                         """))),
             @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos",
@@ -180,7 +180,7 @@ public class RestaurantController {
                           "type": "about:blank",
                           "title": "Dono de Restaurante Inválido",
                           "status": 409,
-                          "detail": "Usuário não pode ser dono de restaurante (tipo inválido): a1b2c3d4-e5f6-7890-abcd-ef0123456789"
+                          "detail": "O usuário informado como dono deve ser do tipo RESTAURANT_OWNER: a1b2c3d4-e5f6-7890-abcd-ef0123456789"
                         }
                         """))),
             @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos",
