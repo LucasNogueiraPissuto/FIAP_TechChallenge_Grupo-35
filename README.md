@@ -21,9 +21,9 @@ src/main/java/com/tech_challange/grupo35/
 ├── exception/       # Exceções customizadas e GlobalExceptionHandler (RFC 7807)
 ├── security/        # JWT service e DTOs de autenticação
 └── user/
-    ├── controller/  # CustomerController, RestaurantOwnerController, UserController
+    ├── controller/  # UserController, UserTypeController
     ├── dto/         # Records de request e response
-    ├── entity/      # UserEntity, CustomerEntity, RestaurantOwnerEntity
+    ├── entity/      # UserEntity, UserTypeEntity
     ├── mapper/      # Conversão entre entidade e DTO
     ├── repository/  # Interfaces e implementações de repositório
     └── service/     # UserService com toda a lógica de negócio
@@ -31,12 +31,13 @@ src/main/java/com/tech_challange/grupo35/
 
 ### Modelo de entidades
 
-A hierarquia de usuários utiliza herança JPA com `InheritanceType.JOINED`:
+Não há herança entre usuários: `UserEntity` é uma entidade única. A distinção
+entre "Cliente" e "Dono de Restaurante" é feita pela associação a um `UserType`
+(entidade gerenciada por CRUD próprio). O `cpf` pertence a todos os usuários.
 
 ```
-UserEntity (tabela: users)
-├── CustomerEntity (tabela: customers) — campo adicional: cpf
-└── RestaurantOwnerEntity (tabela: restaurant_owners) — campo adicional: cnpj
+UserEntity (tabela: users) — campos: name, email, login, password, address, cpf
+   └── userType → UserTypeEntity (tabela: user_types) — campo: name
 ```
 
 Todas as tabelas ficam no schema `challenge` do PostgreSQL.
@@ -107,35 +108,24 @@ Após subir a aplicação, acesse:
 
 Todos os endpoints seguem o versionamento `/api/v1/`.
 
-### Clientes (`/api/v1/customers`)
-
-| Método  | Endpoint                 | Descrição                  |
-| ------- | ------------------------ | -------------------------- |
-| `POST`  | `/api/v1/customers`      | Cadastrar novo cliente     |
-| `PATCH` | `/api/v1/customers/{id}` | Atualizar dados do cliente |
-
-### Donos de Restaurante (`/api/v1/restaurant-owners`)
-
-| Método  | Endpoint                         | Descrição                              |
-| ------- | -------------------------------- | -------------------------------------- |
-| `POST`  | `/api/v1/restaurant-owners`      | Cadastrar novo dono de restaurante     |
-| `PATCH` | `/api/v1/restaurant-owners/{id}` | Atualizar dados do dono de restaurante |
-
 ### Usuários (`/api/v1/users`)
 
-| Método   | Endpoint                      | Descrição                   |
-| -------- | ----------------------------- | --------------------------- |
-| `GET`    | `/api/v1/users?name={nome}`   | Buscar usuários por nome    |
-| `PATCH`  | `/api/v1/users/{id}/password` | Alterar senha               |
-| `DELETE` | `/api/v1/users/{id}`          | Deletar usuário             |
-| `POST`   | `/api/v1/users/login`         | Validar login (retorna JWT) |
+| Método   | Endpoint                        | Descrição                          |
+| -------- | ------------------------------- | ---------------------------------- |
+| `POST`   | `/api/v1/users`                 | Cadastrar novo usuário             |
+| `PATCH`  | `/api/v1/users/{id}`            | Atualizar dados do usuário         |
+| `GET`    | `/api/v1/users?name={nome}`     | Buscar usuários por nome           |
+| `PATCH`  | `/api/v1/users/{id}/user-type`  | Associar tipo de usuário existente |
+| `PATCH`  | `/api/v1/users/{id}/password`   | Alterar senha                      |
+| `DELETE` | `/api/v1/users/{id}`            | Deletar usuário                    |
+| `POST`   | `/api/v1/users/login`           | Validar login (retorna JWT)        |
 
 ## Exemplos de uso
 
-### Cadastrar cliente
+### Cadastrar usuário
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/customers \
+curl -X POST http://localhost:8080/api/v1/users \
   -H "Content-Type: application/json" \
   -d '{
     "name": "João Silva",
